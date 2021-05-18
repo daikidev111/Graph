@@ -77,6 +77,41 @@ class Graph:
                 self.dfs_recursion(next_vertex)
 
 
+    def dijkastra(self, source):
+        source.distance = 0
+        discovered = MinHeap()  # make it minheap()
+        discovered.append(source.distance, 0) # append(key, data)
+        while len(discovered) > 0:
+            # break out of the loop once it has nothing to be discovered anymore
+            u = discovered.pop(0)  # serve for queue
+            u.visited = True # means I have visited, distance is finalized
+            # perform edge relaxation
+            for edge in u.edges:
+                # looping through the vertex's edges
+                v = edge.v  # v is directed vertex
+                # distance is still /inf
+                if not v.discovered:  # if the vertex is not discovered yet then append
+                    v.discovered = True
+                    v.distance = u.distance + edge.w
+                    v.previous = u
+                    discovered.append(v.distance, v)
+
+                    # TODO implement the backtracking
+
+                # in heap, but not finalized
+                elif v.visited == False:
+                    # if u found a shorter one, change it (edge relaxation)
+                    if v.distance > u.distance + edge.w:
+                        #update distance
+                        v.distance = u.distance + edge.w
+                        v.previous = u
+                        #TODO update Heap
+                        discovered.update(v, v.distance) # update vertex v in heap, with distance v.distance; perform rise
+
+
+
+
+
 class Vertex:
     def __init__(self, id):
         self.id = id
