@@ -2,11 +2,16 @@
 
 class Graph:
     def __init__(self, V):
-        # array for the adjacency list
-        self.vertices = [None] * len(V)
+        # # array for the adjacency list
+        # self.vertices = [None] * len(V)
+        #
+        # for i in range(len(V)):
+        #     self.vertices[i] = Vertex(V[i])
 
+        # adjacency matrix
+        self.matrix = [None] * len(V)
         for i in range(len(V)):
-            self.vertices[i] = Vertex(V[i])
+            self.matrix[i] = [None] * len(V)
 
     def __str__(self):
         output = ""
