@@ -1,17 +1,14 @@
 # this is the adjacency list
+from Queue import Queue
+
 
 class Graph:
     def __init__(self, V):
-        # # array for the adjacency list
-        # self.vertices = [None] * len(V)
-        #
-        # for i in range(len(V)):
-        #     self.vertices[i] = Vertex(V[i])
+        # array for the adjacency list
+        self.vertices = [None] * len(V)
 
-        # adjacency matrix
-        self.matrix = [None] * len(V)
         for i in range(len(V)):
-            self.matrix[i] = [None] * len(V)
+            self.vertices[i] = Vertex(V[i])
 
     def __str__(self):
         output = ""
@@ -19,11 +16,75 @@ class Graph:
             output = output + "Vertex" + str(vertex) + "\n"
         return output
 
+    def bfs(self, source):
+        discovered = []  # make it queue
+        return_bfs = []
+        discovered.append(source)
+        while len(discovered) > 0:
+            # break out of the loop once it has nothing to be discovered anymore
+            u = discovered.pop(0)  # serve for queue
+            u.visited = True
+            return_bfs.append(u)
+            for edge in u.edges:
+                # looping through the vertex's edges
+                v = edge.v  # v is directed vertex
+                if not v.discovered:  # if the vertex is not discovered yet then append
+                    discovered.append(v)
+                    v.discovered = True
+        return return_bfs
+
+    def bfs_distance(self, source):
+        discovered = []  # make it queue
+        discovered.append(source)
+        while len(discovered) > 0:
+            # break out of the loop once it has nothing to be discovered anymore
+            u = discovered.pop(0)  # serve for queue
+            u.visited = True
+            for edge in u.edges:
+                # looping through the vertex's edges
+                v = edge.v  # v is directed vertex
+                if not v.discovered:  # if the vertex is not discovered yet then append
+                    discovered.append(v)
+                    v.discovered = True
+                    v.distance = u.distance + 1
+                    v.previous = u
+                    # TODO implement the backtracking
+
+    def dfs(self, source):
+
+        # discovered is a stack, so it follows LIFO
+        # TODO: create stack that has push and pop methods
+        discovered = []  # make it queue
+        return_bfs = []
+        discovered.append(source)  # assume append = push for now
+        while len(discovered) > 0:
+            # break out of the loop once it has nothing to be discovered anymore
+            u = discovered.pop()  # serve for queue
+            u.visited = True
+            return_bfs.append(u)
+            for edge in u.edges:
+                # looping through the vertex's edges
+                v = edge.v  # v is directed vertex
+                if not v.discovered:  # if the vertex is not discovered yet then append
+                    discovered.append(v)  # assume append = push for now
+                    v.discovered = True
+        return return_bfs
+
+    def dfs_recursion(self, source):
+        source.visited = True
+        for next_vertex in source.edges:
+            if not next_vertex.visited:
+                self.dfs_recursion(next_vertex)
+
 
 class Vertex:
     def __init__(self, id):
         self.id = id
         self.edges = []
+        self.discovered = False
+        self.visited = False
+        self.distance = 0
+        self.previous = None
 
     def __str__(self):
         return_string = str(self.id)
