@@ -8,6 +8,7 @@ class Graph:
         self.vertices = [None] * len(V)
 
         for i in range(len(V)):
+            print(V)
             self.vertices[i] = Vertex(V[i])
 
     def __str__(self):
