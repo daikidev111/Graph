@@ -6,12 +6,8 @@ class Graph:
         # array for the adjacency list
         self.vertices = [None] * len(V)
 
-        res = []
         for i in range(len(V)):
-            res.append(Vertex(V[i][0]))
-            res.append(Vertex(V[i][1]))
-
-        self.vertices = res
+            self.vertices[i] = Vertex(V[i])
 
     def add_edges(self, edges, prices):
         for edge in edges:
@@ -36,23 +32,14 @@ class Vertex:
         self.edges = []
         self.discovered = False
         self.visited = False
-        self.distance = 0
         self.litre = 1
-        # self.predecessor = None do we need this??
 
     def add_edge(self, edge):
         self.edges.append(edge)
 
-    # def __str__(self):
-    #     return_string = str(self.id)
-    #     return return_string
-
 
 class Edge:
     def __init__(self, u, v, w, ratio):
-        # u is the liquor to be traded
-        # v is the liquor to be received
-        # w is the ratio
         self.u = u
         self.v = v
         self.w = w
@@ -62,54 +49,59 @@ class Edge:
         return_string = str(self.u) + "," + str(self.v) + "," + str(self.w) + "," + str(self.ratio)
         return return_string
 
-    def set_price(self, price):
-        print(self.w)
-
 
 def best_trades(prices, starting_liquid, max_trades, townspeople):
     # initialize graph
 
     # count how many vertices there are
     edges = []
+    vertex_list = []
     for i in range(len(townspeople)):
         edges += townspeople[i]
 
+    for edge in edges:
+        if not edge[0] in vertex_list:
+            vertex_list.append(edge[0])
+        if not edge[1] in vertex_list:
+            vertex_list.append(edge[1])
+
     # initialize a graph
-    graph = Graph(edges)
+    graph = Graph(vertex_list)
 
     # now add edges
     graph.add_edges(edges, prices)
 
-    # return bellman_ford_test(graph.vertices, starting_liquid, max_trades)  # vertices has been added but named as
     # graph
-    return bellman(graph.vertices, starting_liquid, max_trades)
+    return BellmanFord(graph.vertices, starting_liquid, max_trades, [10, 5, 1, 0.1])
 
 
-def bellman(graph, source, max_trades):
-    d = {}
-    for node in graph:
-        d[node.liquor_id] = float('Inf')
+def BellmanFord(graph, source, max_trades, prices):
+    dist = [float("Inf")] * len(graph)
+    dist[source] = 0
+    predecessor = [None] * len(graph)
 
-    dist = [float("Inf")] * len(d)
-    dist[source] = 1
+    # finding the starting point of the graph
+    for vertex in graph:
+        if vertex.liquor_id == source:
+            source = vertex
 
+    discovered_queue = Queue()
+    discovered_queue.put(source)
 
-    for _ in range(max_trades):
-        for vertex in graph:
-            print("liquor id is: " + str(vertex.liquor_id))
-            for edge in vertex.edges:
-                u = edge.u
-                v = edge.v
-                w = edge.w
-                vertex.litre = vertex.litre * edge.ratio
-                print(vertex.litre)
-                if dist[u] != float("Inf") and dist[u] + w < dist[v]:
-                    dist[v] = dist[u] + w
+    while max_trades >= 0:
+        vertex = discovered_queue.get()
+        for edge in vertex.edges:
+            litre = vertex.litre
+            u = edge.u
+            v = edge.v
+            litre = litre * edge.ratio
+            w = edge.w
+            price = prices[vertex.liquor_id]
+            print(price)
 
+        if dist[u] != float("Inf") and dist[u] + w < dist[v]:
+            dist[v] = dist[u] + w
     print(dist)
-
-    # TODO: make the weight be ratio
-    # TODO: ratio * litre of the bottle
 
 
 if __name__ == '__main__':
